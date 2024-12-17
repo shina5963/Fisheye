@@ -26,7 +26,7 @@ public class EarthController : MonoBehaviour
     {
         // 地球回転処理
         float degreesPerSecond = 360f / rotationPeriod;
-        Earth.transform.Rotate(Vector3.up, degreesPerSecond * Time.deltaTime, Space.Self);
+        Earth.transform.Rotate(Vector3.up, -1*degreesPerSecond * Time.deltaTime, Space.Self);
 
         // シミュレーション内時刻の進行
         // ここでは1秒ごとに1時間が経過すると仮定
