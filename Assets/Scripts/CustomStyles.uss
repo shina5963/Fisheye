@@ -1,0 +1,93 @@
+#Vector3Field > Label {
+    flex-direction: row;
+}
+
+#Vector3Field FloatField {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    flex-wrap: wrap-reverse;
+    flex-basis: auto;
+    align-items: auto;
+    justify-content: flex-start;
+    flex-shrink: initial;
+    max-width: 29%;
+    min-width: 0;
+    align-self: auto;
+    margin-right: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: auto;
+    padding-top: initial;
+    padding-right: initial;
+    padding-bottom: initial;
+    padding-left: initial;
+    border-top-width: initial;
+    border-right-width: initial;
+    -unity-background-scale-mode: stretch-to-fill;
+    text-overflow: clip;
+}
+
+#Vector3Field #unity-x-input {
+}
+
+#Vector3Field VisualElement {
+    flex-direction: row;
+    align-items: auto;
+    justify-content: flex-start;
+    align-self: auto;
+    max-width: 460px;
+}
+
+#Vector3Field FloatField FloatInput {
+    display: flex;
+    position: relative;
+    background-color: rgb(42, 42, 42);
+    max-height: 38px;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    border-top-width: 1px;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    min-width: auto;
+    align-items: auto;
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 153px;
+}
+
+#Vector3Field FloatField Label {
+    display: flex;
+    position: relative;
+    -unity-text-align: upper-left;
+    margin-top: auto;
+    min-width: auto;
+    margin-right: auto;
+    margin-bottom: auto;
+    margin-left: auto;
+}
+
+Satellite FloatField Label {
+    display: flex;
+    position: relative;
+    -unity-text-align: upper-left;
+    margin-top: auto;
+}
+
+.Satelite {
+}
+
+.SatelliteRotation {
+}
+
+#Vector3Field {
+    flex-direction: column;
+    align-items: flex-start;
+}

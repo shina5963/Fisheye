@@ -16,9 +16,11 @@ public class SatelliteController : MonoBehaviour
     public Vector2 pitchSpeedRange = new Vector2(-0.5f, 0.5f);
     public Vector2 yawSpeedRange = new Vector2(-0.5f, 0.5f);
 
-    private float rollSpeed;
-    private float pitchSpeed;
-    private float yawSpeed;
+    public float rollSpeed=1;
+    public float pitchSpeed=1;
+    public float yawSpeed=1;
+
+    public Vector3 satellitePower=new Vector3(1,1,1);
 
     // 更新間隔
     [SerializeField] private float randomizeInterval = 2.0f;
@@ -48,7 +50,7 @@ public class SatelliteController : MonoBehaviour
         degreesPerSecond = 360f / orbitPeriod;
 
         // 初期ランダム回転速度設定
-        UpdateRandomSpeeds();
+        //UpdateRandomSpeeds();
     }
 
     void Update()
@@ -57,18 +59,19 @@ public class SatelliteController : MonoBehaviour
         SatelliteParent.transform.Rotate(0f, -1 * degreesPerSecond * Time.deltaTime, 0f, Space.Self);
 
         // ランダム姿勢回転
-        Satellite.transform.Rotate(rollSpeed * Time.deltaTime, pitchSpeed * Time.deltaTime, yawSpeed * Time.deltaTime, Space.Self);
+        //Satellite.transform.Rotate(rollSpeed * Time.deltaTime, pitchSpeed * Time.deltaTime, yawSpeed * Time.deltaTime, Space.Self);
+        Satellite.transform.Rotate(satellitePower.x* Time.deltaTime, satellitePower.y* Time.deltaTime, satellitePower.z* Time.deltaTime, Space.Self);
 
         // ランダム速度更新
-        timeSinceLastUpdate += Time.deltaTime;
-        if (timeSinceLastUpdate >= randomizeInterval)
-        {
-            UpdateRandomSpeeds();
-            timeSinceLastUpdate = 0f;
-        }
+      //  timeSinceLastUpdate += Time.deltaTime;
+        //if (timeSinceLastUpdate >= randomizeInterval)
+       // {
+            //UpdateRandomSpeeds();
+       //     timeSinceLastUpdate = 0f;
+       // }
 
         // テキスト更新
-        UpdateUIText();
+       // UpdateUIText();
     }
 
     // ランダムな速度を生成する関数
