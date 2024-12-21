@@ -3,6 +3,8 @@ using UnityEngine.UI; // UI—p
 
 public class SatelliteController : MonoBehaviour
 {
+
+    public EarthController earthController;
     // ‹O“¹ŒXÎŠp(“x)
     [SerializeField] private float inclinationAngle = 51.6f;
 
@@ -43,11 +45,11 @@ public class SatelliteController : MonoBehaviour
 
     void Start()
     {
+
         // ‹O“¹–Ê‚ÌŒXÎİ’è
         SatelliteParent.transform.localRotation = Quaternion.Euler(0f, 0f, inclinationAngle);
 
-        // ‰ñ“]‘¬“xŒvZ
-        degreesPerSecond = 360f / orbitPeriod;
+       
 
         // ‰Šúƒ‰ƒ“ƒ_ƒ€‰ñ“]‘¬“xİ’è
         //UpdateRandomSpeeds();
@@ -55,6 +57,13 @@ public class SatelliteController : MonoBehaviour
 
     void Update()
     {
+
+
+        orbitPeriod = earthController.rotationPeriod / 16f;//earthController.rotationPeriod=24ŠÔ‚Ìê‡A90•ª
+
+        // ‰ñ“]‘¬“xŒvZ
+        degreesPerSecond = 360f / orbitPeriod;
+
         // ‹O“¹‰ñ“]ˆ—
         SatelliteParent.transform.Rotate(0f, -1 * degreesPerSecond * Time.deltaTime, 0f, Space.Self);
 

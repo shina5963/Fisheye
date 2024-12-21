@@ -1,0 +1,27 @@
+TextField #unity-text-input {
+    background-color: rgb(109, 109, 109);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+TextField Label {
+    justify-content: space-around;
+    align-self: stretch;
+    align-items: auto;
+    flex-wrap: wrap;
+    flex-direction: column;
+    left: 10px;
+}
+
+TextField {
+    display: flex;
+    position: relative;
+    max-height: none;
+    min-width: auto;
+    align-items: auto;
+    flex-direction: row;
+    justify-content: flex-start;
+    width: auto;
+}

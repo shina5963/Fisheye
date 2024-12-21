@@ -1,3 +1,27 @@
+FloatInput {
+    display: flex;
+    position: relative;
+    background-color: rgb(42, 42, 42);
+    max-height: 38px;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    border-top-width: 1px;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    min-width: auto;
+    align-items: auto;
+    flex-direction: row;
+    justify-content: flex-start;
+    width: auto;
+}
+
 #Vector3Field > Label {
     flex-direction: row;
 }
@@ -90,4 +114,50 @@ Satellite FloatField Label {
 #Vector3Field {
     flex-direction: column;
     align-items: flex-start;
+}
+
+Slider #unity-text-input {
+    display: flex;
+    position: relative;
+    background-color: rgb(42, 42, 42);
+    max-height: 38px;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    border-top-width: 1px;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    min-width: auto;
+    align-items: auto;
+    flex-direction: row;
+    justify-content: flex-start;
+    width: auto;
+    align-self: auto;
+}
+
+Slider #unity-drag-container {
+    max-width: 150px;
+}
+
+Slider #unity-drag-container #unity-dragger {
+    max-width: none;
+    width: 24px;
+    border-top-left-radius: 50px;
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
+    border-bottom-left-radius: 50px;
+    background-color: rgb(153, 153, 153);
+    justify-content: center;
+    align-items: center;
+    height: 24px;
+}
+
+Slider #unity-text-field {
+    width: 75px;
 }
