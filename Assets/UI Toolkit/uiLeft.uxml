@@ -1,7 +1,9 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/Scripts/CustomStyles.uss?fileID=7433441132597879392&amp;guid=86184057b3dc5c5489294c4c8c05fba2&amp;type=3#CustomStyles" />
     <Style src="project://database/Assets/UI%20Toolkit/left.uss?fileID=7433441132597879392&amp;guid=2369d1de84dc465488569f52e2eac593&amp;type=3#left" />
+    <Style src="project://database/Assets/UI%20Toolkit/JapaneseFontStyle.uss?fileID=7433441132597879392&amp;guid=35b0ca47d88ebc441bc6e3b413362e67&amp;type=3#JapaneseFontStyle" />
     <ui:ScrollView name="ScrollViewRight" mode="Vertical" vertical-scroller-visibility="Auto" horizontal-scroller-visibility="Hidden" mouse-wheel-scroll-size="180" class="ScrollViewRight" style="width: 420px; align-self: flex-start; height: 632.5px; display: flex; overflow: visible; background-color: rgb(56, 56, 56); color: rgb(255, 255, 255); -unity-text-outline-width: 1px; -unity-text-outline-color: rgb(255, 255, 255); text-shadow: 0 0 0 rgb(0, 0, 0); text-overflow: clip; font-size: 22px;">
+        <ui:Label tabindex="-1" text="---------------------  Version 1.1（12/23）----------------------" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" style="justify-content: flex-start; align-items: auto; -unity-text-align: middle-center;" />
         <ui:TextField picking-mode="Ignore" label="時刻" value="00:00:00" />
     </ui:ScrollView>
 </ui:UXML>

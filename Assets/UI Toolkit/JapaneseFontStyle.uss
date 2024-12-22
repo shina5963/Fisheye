@@ -1,0 +1,7 @@
+Label {
+    -unity-font-definition: initial;
+    -unity-font: url("project://database/Assets/Noto_Sans_JP/static/NotoSansJP-Light.ttf?fileID=12800000&guid=0ae1fd9ea5642404995941a936b2dabf&type=3#NotoSansJP-Light");
+    -unity-font-style: normal;
+    font-size: 20px;
+    left: 10px;
+}

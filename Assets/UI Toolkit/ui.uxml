@@ -1,12 +1,13 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/Scripts/CustomStyles.uss?fileID=7433441132597879392&amp;guid=86184057b3dc5c5489294c4c8c05fba2&amp;type=3#CustomStyles" />
+    <Style src="project://database/Assets/UI%20Toolkit/JapaneseFontStyle.uss?fileID=7433441132597879392&amp;guid=35b0ca47d88ebc441bc6e3b413362e67&amp;type=3#JapaneseFontStyle" />
     <ui:ScrollView name="ScrollViewRight" mode="Vertical" vertical-scroller-visibility="Auto" horizontal-scroller-visibility="Hidden" mouse-wheel-scroll-size="180" class="ScrollViewRight" style="width: 420px; align-self: flex-end; height: 632.5px; display: flex; overflow: visible; background-color: rgb(56, 56, 56); color: rgb(255, 255, 255); -unity-text-outline-width: 1px; -unity-text-outline-color: rgb(255, 255, 255); text-shadow: 0 0 0 rgb(0, 0, 0); text-overflow: clip; font-size: 22px;">
-        <ui:FloatField label="1 日の長さ（秒）" value="1440" />
+        <ui:FloatField label="1 日の長さ（秒）" value="1440" style="-unity-font: url(&quot;project://database/Assets/UI%20Toolkit/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&amp;guid=c272ed91a246e60428a2ff3aff0e24a2&amp;type=3#NotInter-Regular&quot;); -unity-font-definition: initial;" />
         <ui:Slider label="視野角（度）" high-value="180" show-input-field="true" inverted="false" style="min-width: 11px;" />
         <ui:Slider label="魚眼率" high-value="1" show-input-field="true" inverted="false" style="min-width: 11px;" />
         <ui:Vector3Field label="Satellite Rotation" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild SatelliteRotation" />
         <ui:Vector3Field label="Satellite Power" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild" />
-        <ui:Button text="ダウンレンジ表示" parse-escape-sequences="true" display-tooltip-when-elided="true" style="border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-right-radius: 6px; border-bottom-left-radius: 6px;" />
+        <ui:Button text="ダウンレンジ表示" parse-escape-sequences="true" display-tooltip-when-elided="true" style="border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-right-radius: 6px; border-bottom-left-radius: 6px; -unity-font: url(&quot;project://database/Assets/Noto_Sans_JP/static/NotoSansJP-Light.ttf?fileID=12800000&amp;guid=0ae1fd9ea5642404995941a936b2dabf&amp;type=3#NotoSansJP-Light&quot;); -unity-font-definition: initial;" />
         <ui:Vector3Field label="Vec3 Field" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild" style="display: none;" />
         <ui:Vector3Field label="Vec3 Field" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild" style="display: none;" />
         <ui:Vector3Field label="Vec3 Field" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild" style="display: none;" />
