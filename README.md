@@ -13,3 +13,8 @@ https://shina5963.github.io/Fisheye/
 - cubesatを使用
 
 
+  フォント「Noto Sans JP」は、Google Fontsより提供され、SIL Open Font License 1.1に基づいて使用されています。
+詳細はこちら: https://fonts.google.com/specimen/Noto+Sans+JP
+
+
+
