@@ -304,7 +304,7 @@ public class FrustumToEarthProjection : MonoBehaviour
         for (int i = 0; i <= segmentCount; i++)
         {
             float t = (float)i / segmentCount; // 進捗割合
-            Vector3 pointOnArc = Vector3.Slerp(startNormalized, endNormalized, t) * radius; // 球面線形補間
+            Vector3 pointOnArc = Vector3.Slerp(startNormalized, endNormalized, t) *( radius+10); // 球面線形補間
             lineRenderer.SetPosition(i, pointOnArc); // 頂点を設定
         }
 
