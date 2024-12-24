@@ -119,7 +119,7 @@
 
     document.body.appendChild(script);
 
-    // 追加した画像保存用のDownloadImage関数
+
     function DownloadImage(base64Image) {
       var link = document.createElement('a');
       link.href = 'data:image/png;base64,' + base64Image;
@@ -127,7 +127,7 @@
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
+    }
   </script>
 </body>
 
