@@ -35,6 +35,7 @@ namespace SingularityGroup.HotReload.Editor {
         private const string LaunchOnEditorStartKey = "HotReloadWindow.LaunchOnEditorStart";
         private const string AutoRecompileUnsupportedChangesKey = "HotReloadWindow.AutoRecompileUnsupportedChanges";
         private const string AutoRecompilePartiallyUnsupportedChangesKey = "HotReloadWindow.AutoRecompilePartiallyUnsupportedChanges";
+        private const string ShowNotificationsKey = "HotReloadWindow.ShowNotifications";
         private const string ShowPatchingNotificationsKey = "HotReloadWindow.ShowPatchingNotifications";
         private const string ShowCompilingUnsupportedNotificationsKey = "HotReloadWindow.ShowCompilingUnsupportedNotifications";
         private const string AutoRecompileUnsupportedChangesImmediatelyKey = "HotReloadWindow.AutoRecompileUnsupportedChangesImmediately";
@@ -58,6 +59,7 @@ namespace SingularityGroup.HotReload.Editor {
         private const string RunTabUnsupportedChangesFilterKey = "HotReloadWindow.RunTabUnsupportedChangesFilter";
         private const string RunTabCompileErrorFilterKey = "HotReloadWindow.RunTabCompileErrorFilter";
         private const string RunTabPartiallyAppliedPatchesFilterKey = "HotReloadWindow.RunTabPartiallyAppliedPatchesFilter";
+        private const string RunTabUndetectedPatchesFilterKey = "HotReloadWindow.RunTabUndetectedPatchesFilter";
         private const string RunTabAppliedPatchesFilterKey = "HotReloadWindow.RunTabAppliedPatchesFilter";
         private const string RecompileDialogueShownKey = "HotReloadWindow.RecompileDialogueShown";
         private const string OpenedWindowAtLeastOnceKey = "HotReloadWindow.OpenedWindowAtLeastOnce";
@@ -270,6 +272,11 @@ namespace SingularityGroup.HotReload.Editor {
             set { EditorPrefs.SetBool(AutoRecompilePartiallyUnsupportedChangesKey, value); }
         }
 
+        public static bool ShowNotifications {
+            get { return EditorPrefs.GetBool(ShowNotificationsKey, true); }
+            set { EditorPrefs.SetBool(ShowNotificationsKey, value); }
+        }
+
         public static bool ShowPatchingNotifications {
             get { return EditorPrefs.GetBool(ShowPatchingNotificationsKey, true); }
             set { EditorPrefs.SetBool(ShowPatchingNotificationsKey, value); }
@@ -384,6 +391,11 @@ namespace SingularityGroup.HotReload.Editor {
         public static bool RunTabPartiallyAppliedPatchesFilter {
             get { return EditorPrefs.GetBool(RunTabPartiallyAppliedPatchesFilterKey, true); }
             set { EditorPrefs.SetBool(RunTabPartiallyAppliedPatchesFilterKey, value); }
+        }
+        
+        public static bool RunTabUndetectedPatchesFilter {
+            get { return EditorPrefs.GetBool(RunTabUndetectedPatchesFilterKey, true); }
+            set { EditorPrefs.SetBool(RunTabUndetectedPatchesFilterKey, value); }
         }
         
         public static bool RunTabAppliedPatchesFilter {

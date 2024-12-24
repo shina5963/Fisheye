@@ -28,6 +28,7 @@ namespace SingularityGroup.HotReload.Editor {
         public string[] assetBlacklist;
         public bool changePlaymodeTint;
         public bool disableCompilingFromEditorScripts;
+        public bool enableInspectorFreezeFix;
     }
     
     [InitializeOnLoad]
@@ -39,6 +40,7 @@ namespace SingularityGroup.HotReload.Editor {
         internal static bool _compileError;
         internal static bool _applyingFailed;
         internal static bool _appliedPartially;
+        internal static bool _appliedUndetected;
         
         static Timer timer; 
         static bool init;
@@ -50,10 +52,11 @@ namespace SingularityGroup.HotReload.Editor {
         internal static PatchStatus patchStatus = PatchStatus.None;
         
         internal static event Action OnPatchHandled;
-
+        
         
         internal static Config config;
 
+        internal static ICompileChecker compileChecker;
         static bool quitting;
         static EditorCodePatcher() {
             if(init) {
@@ -78,7 +81,7 @@ namespace SingularityGroup.HotReload.Editor {
 
             UpdateHost();
             licenseType = UnityLicenseHelper.GetLicenseType();
-            var compileChecker = CompileChecker.Create();
+            compileChecker = CompileChecker.Create();
             compileChecker.onCompilationFinished += OnCompilationFinished;
             EditorApplication.delayCall += InstallUtility.CheckForNewInstall;
             AddEditorFocusChangedHandler(OnEditorFocusChanged);
@@ -139,6 +142,10 @@ namespace SingularityGroup.HotReload.Editor {
                     }
                 }
             };
+            if (HotReloadState.RecompiledUnsupportedChangesInPlaymode) {
+                HotReloadState.RecompiledUnsupportedChangesInPlaymode = false;
+                EditorApplication.isPlaying = true;
+            }
         }
 
         public static void ResetSettingsOnQuit() {
@@ -167,17 +174,21 @@ namespace SingularityGroup.HotReload.Editor {
         }
 
         public static bool TryRecompileUnsupportedChanges() {
-            if (!HotReloadPrefs.AutoRecompileUnsupportedChanges 
+            var isPlaying = EditorApplication.isPlaying;
+            if (!HotReloadPrefs.AutoRecompileUnsupportedChanges
                 || HotReloadTimelineHelper.UnsupportedChangesCount == 0
                     && (!HotReloadPrefs.AutoRecompilePartiallyUnsupportedChanges || HotReloadTimelineHelper.PartiallySupportedChangesCount == 0)
                 || _compileError 
-                || EditorApplication.isPlaying && !HotReloadPrefs.AutoRecompileUnsupportedChangesInPlayMode
+                || isPlaying && !HotReloadPrefs.AutoRecompileUnsupportedChangesInPlayMode
             ) {
                 return false;
             }
 
             if (HotReloadPrefs.ShowCompilingUnsupportedNotifications) {
                 EditorWindowHelper.ShowNotification(EditorWindowHelper.NotificationStatus.NeedsRecompile);
+            }
+            if (isPlaying) {
+                HotReloadState.RecompiledUnsupportedChangesInPlaymode = true;
             }
             HotReloadRunTab.Recompile();
             return true;
@@ -280,9 +291,7 @@ namespace SingularityGroup.HotReload.Editor {
         }
 
         private static void UpdateHost() {
-            string host = "127.0.0.1";
-            var rootPath = Path.GetFullPath(".");
-            RequestHelper.SetServerInfo(new PatchServerInfo(host, null, rootPath));
+            RequestHelper.SetServerInfo(new PatchServerInfo(RequestHelper.defaultServerHost, HotReloadState.ServerPort, null, Path.GetFullPath(".")));
         }
 
         static void OnIntervalThreaded(object o) {
@@ -322,8 +331,8 @@ namespace SingularityGroup.HotReload.Editor {
                 if (responseWarning.Contains("Scripts have compile errors")) {
                     Log.Error(responseWarning);
                 } else {
-                Log.Warning(responseWarning);
-            }
+                    Log.Warning(responseWarning);
+                }
 
                 if (responseWarning.Contains("Multidimensional arrays are not supported")) {
                     await ThreadUtility.SwitchToMainThread();
@@ -337,9 +346,28 @@ namespace SingularityGroup.HotReload.Editor {
         
         internal static bool firstPatchAttempted;
         static void OnIntervalMainThread() {
-            RequestServerInfo();
             HotReloadSuggestionsHelper.Check();
+            
+            // Moved from RequestServerInfo to avoid GC allocations when HR is not active
+            
+            // Repaint if the running Status has changed since the layout changes quite a bit
+            if (running != ServerHealthCheck.I.IsServerHealthy) {
+                if (HotReloadWindow.Current) {
+                    HotReloadRunTab.RepaintInstant();
+                }
+                running = ServerHealthCheck.I.IsServerHealthy;
+            }
+            if (!running) {
+                startupCompletedAt = null;
+            }
+            if (!running && !StartedServerRecently()) {
+                // Reset startup progress
+                startupProgress = null;
+            }
+            
             if(ServerHealthCheck.I.IsServerHealthy) {
+                // NOTE: avoid calling this method when HR is not running to avoid allocations
+                RequestServerInfo();
                 TryPrepareBuildInfo();
                 if (!requestingCompile && (!config.patchEditModeOnlyOnEditorFocus || Application.isPlaying || UnityEditorInternal.InternalEditorUtility.isApplicationActive)) {
                     RequestHelper.PollMethodPatches(HotReloadState.LastPatchId, resp => HandleResponseReceived(resp));
@@ -538,6 +566,14 @@ namespace SingularityGroup.HotReload.Editor {
             _compileError = response.failures?.Any(failure => failure.Contains("error CS")) ?? false;
             _applyingFailed = response.failures?.Length > 0 || patchResult?.patchFailures.Count > 0;
             _appliedPartially = !_applyingFailed && partiallySupportedChangesFiltered.Count > 0;
+            _appliedUndetected = (patchResult == null || patchResult.patchedMethods.Count == 0) && response.removedMethod.Length == 0;
+
+            var allMethods = patchResult?.patchedSMethods.Select(m => GetExtendedMethodName(m));
+            if (allMethods == null) {
+                allMethods = response.removedMethod.Select(m => GetExtendedMethodName(m)).Distinct(StringComparer.OrdinalIgnoreCase);
+            } else {
+                allMethods = allMethods.Concat(response.removedMethod.Select(m => GetExtendedMethodName(m))).Distinct(StringComparer.OrdinalIgnoreCase);
+            }
 
             if (_compileError) {
                 HotReloadTimelineHelper.EventsTimeline.RemoveAll(e => e.alertType == AlertType.CompileError);
@@ -562,7 +598,7 @@ namespace SingularityGroup.HotReload.Editor {
                         HotReloadTimelineHelper.CreatePatchFailureEventEntry(error, methodName: GetMethodName(method), methodSimpleName: method.simpleName, entryType: EntryType.Child);
                     }
                 }
-                HotReloadTimelineHelper.CreateReloadFinishedWithWarningsEventEntry();
+                HotReloadTimelineHelper.CreateReloadFinishedWithWarningsEventEntry(patchedMethodsDisplayNames: allMethods.ToArray());
                 HotReloadSuggestionsHelper.SetSuggestionsShown(HotReloadSuggestionKind.UnsupportedChanges);
                 if (HotReloadPrefs.AutoRecompileUnsupportedChangesImmediately || UnityEditorInternal.InternalEditorUtility.isApplicationActive) {
                     TryRecompileUnsupportedChanges();
@@ -571,19 +607,27 @@ namespace SingularityGroup.HotReload.Editor {
                 foreach (var responsePartiallySupportedChange in partiallySupportedChangesFiltered) {
                     HotReloadTimelineHelper.CreatePartiallyAppliedEventEntry(responsePartiallySupportedChange, entryType: EntryType.Child, detailed: false);
                 }
-                HotReloadTimelineHelper.CreateReloadPartiallyAppliedEventEntry();
+                HotReloadTimelineHelper.CreateReloadPartiallyAppliedEventEntry(patchedMethodsDisplayNames: allMethods.ToArray());
                 
                 if (HotReloadPrefs.AutoRecompileUnsupportedChangesImmediately || UnityEditorInternal.InternalEditorUtility.isApplicationActive) {
                     TryRecompileUnsupportedChanges();
                 }
+            } else if (_appliedUndetected)  {
+                HotReloadTimelineHelper.CreateReloadUndetectedChangeEventEntry();
             } else {
-                HotReloadTimelineHelper.CreateReloadFinishedEventEntry();
+                HotReloadTimelineHelper.CreateReloadFinishedEventEntry(patchedMethodsDisplayNames: allMethods.ToArray());
             }
 
             // When patching different assembly, compile error will get removed, even though it's still there
             // It's a shortcut we take for simplicity
             if (!_compileError) {
                 HotReloadTimelineHelper.EventsTimeline.RemoveAll(x => x.alertType == AlertType.CompileError);
+            }
+            
+            // attempt to recompile if previous Unity compilation had compilation errors
+            // because new changes might've fixed those errors
+            if (compileChecker.hasCompileErrors) {
+                HotReloadRunTab.Recompile();
             }
 
             if (HotReloadWindow.Current) {
@@ -593,6 +637,19 @@ namespace SingularityGroup.HotReload.Editor {
             OnPatchHandled?.Invoke();
         }
         
+        static string GetExtendedMethodName(SMethod method) {
+            var colonIndex = method.displayName.IndexOf("::", StringComparison.Ordinal);
+            if (colonIndex > 0) {
+                var beforeColon = method.displayName.Substring(0, colonIndex);
+                var spaceIndex = beforeColon.LastIndexOf(".", StringComparison.Ordinal);
+                if (spaceIndex > 0) {
+                    var className = beforeColon.Substring(spaceIndex + 1);
+                    return className + "::" + method.simpleName;
+                }
+            }
+            return method.simpleName;
+        }
+
         static string GetMethodName(SMethod method) {
             var spaceIndex = method.displayName.IndexOf(" ", StringComparison.Ordinal);
             if (spaceIndex > 0) {
@@ -723,6 +780,7 @@ namespace SingularityGroup.HotReload.Editor {
                 return;
             }
             CodePatcher.I.ClearPatchedMethods();
+            HotReloadSuggestionsHelper.SetSuggestionInactive(HotReloadSuggestionKind.EditorsWithoutHRRunning);
             try {
                 requestingStop = true;
                 await HotReloadCli.StopAsync().ConfigureAwait(false);
@@ -796,7 +854,8 @@ namespace SingularityGroup.HotReload.Editor {
             
             bool consumptionsChanged = Status?.freeSessionRunning != resp.freeSessionRunning || Status?.freeSessionEndTime != resp.freeSessionEndTime;
             bool expiresAtChanged = Status?.licenseExpiresAt != resp.licenseExpiresAt;
-            if (resp.consumptionsUnavailableReason == ConsumptionsUnavailableReason.UnrecoverableError
+            if (!EditorCodePatcher.LoginNotRequired 
+                && resp.consumptionsUnavailableReason == ConsumptionsUnavailableReason.UnrecoverableError
                 && Status?.consumptionsUnavailableReason != ConsumptionsUnavailableReason.UnrecoverableError
             ) {
                 Log.Error("Free charges unavailabe. Please contact support if the issue persists.");
@@ -879,27 +938,13 @@ namespace SingularityGroup.HotReload.Editor {
             var waitMs = (int)Mathf.Clamp(pollFrequency - ((DateTime.Now.Ticks / (float)TimeSpan.TicksPerMillisecond) - lastServerPoll), 0, pollFrequency);
             await Task.Delay(waitMs);
 
-            var oldRunning = running;
-
-            var newRunning = ServerHealthCheck.I.IsServerHealthy;
-            running = newRunning;
-
-            if (running) {
-                var resp = await RequestHelper.GetLoginStatus(30);
-                HandleStatus(resp);
-            } else {
-                startupCompletedAt = null;
+            if (!ServerHealthCheck.I.IsServerHealthy) {
+                return;
             }
 
-            if (!running && !StartedServerRecently()) {
-                // Reset startup progress
-                startupProgress = null;
-            }
-
-            // Repaint if the running Status has changed since the layout changes quite a bit
-            if (oldRunning != newRunning && HotReloadWindow.Current) {
-                HotReloadRunTab.RepaintInstant();
-            }
+            
+            var resp = await RequestHelper.GetLoginStatus(30);
+            HandleStatus(resp);
 
             lastServerPoll = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
         }

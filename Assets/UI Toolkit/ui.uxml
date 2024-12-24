@@ -11,5 +11,6 @@
         <ui:Vector3Field label="Vec3 Field" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild" style="display: none;" />
         <ui:Vector3Field label="Vec3 Field" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild" style="display: none;" />
         <ui:Vector3Field label="Vec3 Field" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild" style="display: none;" />
+        <ui:FloatField label="衛星高さ（km）" value="400" is-delayed="false" readonly="false" style="-unity-font: url(&quot;project://database/Assets/UI%20Toolkit/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&amp;guid=c272ed91a246e60428a2ff3aff0e24a2&amp;type=3#NotInter-Regular&quot;); -unity-font-definition: initial;" />
     </ui:ScrollView>
 </ui:UXML>

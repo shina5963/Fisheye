@@ -22,8 +22,9 @@ using UnityEngine.SceneManagement;
 
 namespace SingularityGroup.HotReload {
     class RegisterPatchesResult {
-        public readonly List<SMethod> patchedMethods = new List<SMethod>();
-        public readonly List<SMethod> addedMethods = new List<SMethod>();
+        // note: doesn't include removals and method definition changes (e.g. renames)
+        public readonly List<MethodPatch> patchedMethods = new List<MethodPatch>();
+        public readonly List<SMethod> patchedSMethods = new List<SMethod>();
         public readonly List<Tuple<SMethod, string>> patchFailures = new List<Tuple<SMethod, string>>();
     }
     
@@ -114,7 +115,7 @@ namespace SingularityGroup.HotReload {
                     count += response.patches.Length;
                 }
                 if (count > 0) {
-                    Dispatch.OnHotReload().Forget();
+                    Dispatch.OnHotReload(result.patchedMethods).Forget();
                 }
             } catch(Exception ex) {
                 Log.Warning("Exception occured when handling method patch. Exception:\n{0}", ex);
@@ -163,7 +164,10 @@ namespace SingularityGroup.HotReload {
                         }
                         MethodUtils.DisableVisibilityChecks(newMethod);
                         if (!patch.patchMethods.Any(m => m.metadataToken == sMethod.metadataToken)) {
-                            result.addedMethods.Add(sMethod);
+                            result.patchedMethods.Add(new MethodPatch(null, null, newMethod));
+                            result.patchedSMethods.Add(sMethod);
+                            previousPatchMethods[newMethod] = newMethod;
+                            newMethods.Add(newMethod);
                         }
                     }
                     
@@ -182,6 +186,9 @@ namespace SingularityGroup.HotReload {
                 }
             }
         }
+
+        Dictionary<MethodBase, MethodBase> previousPatchMethods = new Dictionary<MethodBase, MethodBase>();
+        List<MethodBase> newMethods = new List<MethodBase>();
 
         string PatchMethod(Module module, SMethod sOriginalMethod, SMethod sPatchMethod, bool containsBurstJobs, RegisterPatchesResult patchesResult) {
             try {
@@ -208,7 +215,19 @@ namespace SingularityGroup.HotReload {
                 DetourResult result;
                 DetourApi.DetourMethod(state.match, patchMethod, out result);
                 if (result.success) {
-                    patchesResult.patchedMethods.Add(sOriginalMethod);
+                    // previous method is either original method or the last patch method
+                    MethodBase previousMethod;
+                    if (!previousPatchMethods.TryGetValue(state.match, out previousMethod)) {
+                        previousMethod = state.match;
+                    }
+                    MethodBase originalMethod = state.match;
+                    if (newMethods.Contains(state.match)) {
+                        // for function added at runtime the original method should be null
+                        originalMethod = null;
+                    }
+                    patchesResult.patchedMethods.Add(new MethodPatch(originalMethod, previousMethod, patchMethod));
+                    patchesResult.patchedSMethods.Add(sOriginalMethod);
+                    previousPatchMethods[state.match] = patchMethod;
                     try {
                         Dispatch.OnHotReloadLocal(state.match, patchMethod);
                     } catch {

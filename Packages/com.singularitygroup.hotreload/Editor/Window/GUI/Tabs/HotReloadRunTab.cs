@@ -407,7 +407,7 @@ namespace SingularityGroup.HotReload.Editor {
                                     GUILayout.Label(alertEntry.description, HotReloadWindowStyles.LabelStyle);
                                 } else if (!clickableDescription) {
                                     string text = alertEntry.description;
-                                    GUILayout.TextArea(text, HotReloadWindowStyles.StacktraceTextAreaStyle);
+                                    GUILayout.Label(text, HotReloadWindowStyles.LabelStyle);
                                 }
                                 if (alertEntry.actionData != null) {
                                     alertEntry.actionData.Invoke();
@@ -439,7 +439,8 @@ namespace SingularityGroup.HotReload.Editor {
         
                 if (alertEntry.alertType != AlertType.Suggestion && HotReloadWindowStyles.windowScreenWidth > 400 && entryType != EntryType.Child) {
                     using (new EditorGUILayout.HorizontalScope()) {
-                        GUI.Label(new Rect(startRect.x + startRect.width - 60, startRect.y, 80, 20), $"{alertEntry.timestamp.Hour:D2}:{alertEntry.timestamp.Minute:D2}:{alertEntry.timestamp.Second:D2}", HotReloadWindowStyles.TimestampStyle);
+                        var ago = (DateTime.Now - alertEntry.timestamp);
+                        GUI.Label(new Rect(startRect.x + startRect.width - 60, startRect.y, 80, 20), ago.TotalMinutes < 1 ? "now" : $"{(ago.TotalHours > 1 ? $"{Math.Floor(ago.TotalHours)} h " : string.Empty)}{ago.Minutes} min", HotReloadWindowStyles.TimestampStyle);
                     }
                 }
                 
@@ -472,6 +473,11 @@ namespace SingularityGroup.HotReload.Editor {
                     _enabledFilters.Add(AlertType.PartiallySupportedChange);
                 if (!HotReloadPrefs.RunTabPartiallyAppliedPatchesFilter && _enabledFilters.Contains(AlertType.PartiallySupportedChange))
                     _enabledFilters.Remove(AlertType.PartiallySupportedChange);
+                
+                if (HotReloadPrefs.RunTabUndetectedPatchesFilter && !_enabledFilters.Contains(AlertType.UndetectedChange))
+                    _enabledFilters.Add(AlertType.UndetectedChange);
+                if (!HotReloadPrefs.RunTabUndetectedPatchesFilter && _enabledFilters.Contains(AlertType.UndetectedChange))
+                    _enabledFilters.Remove(AlertType.UndetectedChange);
                 
                 if (HotReloadPrefs.RunTabAppliedPatchesFilter && !_enabledFilters.Contains(AlertType.AppliedChange))
                     _enabledFilters.Add(AlertType.AppliedChange);
@@ -539,15 +545,15 @@ namespace SingularityGroup.HotReload.Editor {
                                 if (HotReloadTimelineHelper.EventsTimeline.Count > 0 && GUILayout.Button("Clear")) {
                                     HotReloadTimelineHelper.ClearEntries();
                                     if (HotReloadWindow.Current) {
-                                    HotReloadWindow.Current.Repaint();
-                                }
+                                        HotReloadWindow.Current.Repaint();
+                                    }
                                 }
                                 GUILayout.Space(3);
                             }
                         }
                         if (!noteShown) {
                             GUILayout.Space(2f);
-                            using (new EditorGUILayout.VerticalScope(HotReloadWindowStyles.Scroll)) {
+                            using (new EditorGUILayout.VerticalScope()) {
                                 RenderEntries(TimelineType.Timeline);
                             }
                         }
@@ -672,7 +678,12 @@ namespace SingularityGroup.HotReload.Editor {
 
             CompileMethodDetourer.Reset();
             AssetDatabase.Refresh();
-            CompilationPipeline.RequestScriptCompilation();
+            // This forces the recompilation if no changes were made.
+            // This is better UX because otherwise the recompile button is unresponsive
+            // which can be extra annoying if there are compile error entries in the list
+            if (!EditorApplication.isCompiling) {
+                CompilationPipeline.RequestScriptCompilation();
+            }
         }
         
         private void RenderIndicationButtons() {

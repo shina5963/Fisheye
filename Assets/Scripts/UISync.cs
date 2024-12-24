@@ -11,12 +11,13 @@ public class UISync : MonoBehaviour
     public EarthController earthController;
     public FrustumToEarthProjection frustumToEarthProjection;
     public GameObject targetObject; // 回転を同期する対象のオブジェクト
-
+    public GameObject SatelliteHeight;
     private TextField timeStringField;
 
     public Camera FisheyeCamera;
     public Volume volume;
     private FloatField DayTime;
+    private FloatField Height;
     private Slider FOV;
     private Slider FisheyeRatio;
 
@@ -34,6 +35,7 @@ public class UISync : MonoBehaviour
         var rootL = UILeft.GetComponent<UIDocument>().rootVisualElement;
 
         DayTime = root.Query<FloatField>().Where(v => v.label == "1 日の長さ（秒）").First();
+        Height= root.Query<FloatField>().Where(v => v.label == "衛星高さ（km）").First();
 
         SatelliteRotation = root.Query<Vector3Field>().Where(v => v.label == "Satellite Rotation").First();
         SatellitePower = root.Query<Vector3Field>().Where(v => v.label == "Satellite Power").First();
@@ -51,6 +53,7 @@ public class UISync : MonoBehaviour
         SatellitePower.value = RoundVector3(satelliteController.satellitePower, 2);
 
         DayTime.value = Mathf.Round(earthController.rotationPeriod);
+        Height.value = -Mathf.Round(SatelliteHeight.transform.localPosition.x+6371);
         FOV.value = Mathf.Round(FisheyeCamera.fieldOfView);
 
         // Lens Distortionエフェクトを取得
@@ -98,6 +101,18 @@ public class UISync : MonoBehaviour
 
             // 丸めた値をフィールドに再代入（フィールドを更新）
             DayTime.SetValueWithoutNotify(roundedValue);
+        });
+
+        Height.RegisterValueChangedCallback(evt =>
+        {
+            // 値を丸めてTransformに反映
+            var roundedValue = Mathf.Round(evt.newValue);
+            if (roundedValue < 1)
+                roundedValue = 1;
+            SatelliteHeight.transform.localPosition = -new Vector3( roundedValue+6371,0,0);
+
+            // 丸めた値をフィールドに再代入（フィールドを更新）
+            Height.SetValueWithoutNotify(roundedValue);
         });
 
         FOV.RegisterValueChangedCallback(evt =>
