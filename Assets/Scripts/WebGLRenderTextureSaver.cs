@@ -4,7 +4,7 @@ public class WebGLRenderTextureSaver : MonoBehaviour
 {
     public RenderTexture renderTexture; // 2592x2592のRenderTexture
 
-    void SaveRenderTextureAsCroppedPNG()
+   public  void SaveRenderTextureAsCroppedPNG()
     {
         if (renderTexture == null)
         {
@@ -57,7 +57,7 @@ public class WebGLRenderTextureSaver : MonoBehaviour
     // デバッグ用：キーを押したら保存
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKeyDown(KeyCode.S))
         {
             SaveRenderTextureAsCroppedPNG();
         }

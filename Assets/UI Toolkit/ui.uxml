@@ -2,15 +2,32 @@
     <Style src="project://database/Assets/Scripts/CustomStyles.uss?fileID=7433441132597879392&amp;guid=86184057b3dc5c5489294c4c8c05fba2&amp;type=3#CustomStyles" />
     <Style src="project://database/Assets/UI%20Toolkit/JapaneseFontStyle.uss?fileID=7433441132597879392&amp;guid=35b0ca47d88ebc441bc6e3b413362e67&amp;type=3#JapaneseFontStyle" />
     <ui:ScrollView name="ScrollViewRight" mode="Vertical" vertical-scroller-visibility="Auto" horizontal-scroller-visibility="Hidden" mouse-wheel-scroll-size="180" class="ScrollViewRight" style="width: 420px; align-self: flex-end; height: 632.5px; display: flex; overflow: visible; background-color: rgb(56, 56, 56); color: rgb(255, 255, 255); -unity-text-outline-width: 1px; -unity-text-outline-color: rgb(255, 255, 255); text-shadow: 0 0 0 rgb(0, 0, 0); text-overflow: clip; font-size: 22px;">
+        <ui:VisualElement class="TimeButtons" style="flex-grow: 1; flex-direction: row; align-items: auto; justify-content: center; display: none;">
+            <ui:Button text="▶" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+            <ui:Button text="ll" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-style: bold;" />
+            <ui:Button text="▶l" parse-escape-sequences="true" display-tooltip-when-elided="true" style="display: none;" />
+        </ui:VisualElement>
+        <ui:Toggle label="時間停止（Space）" value="false" />
         <ui:FloatField label="1 日の長さ（秒）" value="1440" style="-unity-font: url(&quot;project://database/Assets/UI%20Toolkit/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&amp;guid=c272ed91a246e60428a2ff3aff0e24a2&amp;type=3#NotInter-Regular&quot;); -unity-font-definition: initial;" />
         <ui:Slider label="視野角（度）" high-value="180" show-input-field="true" inverted="false" style="min-width: 11px;" />
         <ui:Slider label="魚眼率" high-value="1" show-input-field="true" inverted="false" style="min-width: 11px;" />
-        <ui:Vector3Field label="Satellite Rotation" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild SatelliteRotation" />
-        <ui:Vector3Field label="Satellite Power" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild" />
+        <ui:VisualElement name="VisualElement" class="SatellitePosVector3Field" style="flex-grow: 1; max-height: 130px; display: none;">
+            <ui:Vector3Field label="衛星位置" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild" style="display: flex;" />
+            <ui:VisualElement name="VisualElement" style="flex-grow: 1; flex-direction: row; justify-content: center; align-items: center; position: relative; top: -85px; min-height: 78px; height: -135px;">
+                <ui:Label tabindex="-1" text="緯度（°）" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+                <ui:Label tabindex="-1" text="経度（°）" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+                <ui:Label tabindex="-1" text="高さ（km）" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Vector3Field label="衛星位置（緯度[°], 経度[°], 高度[km]）" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild SatelliteRotation" />
+        <ui:Vector3Field label="衛星回転（ヨー[°], ピッチ[°], ロール[°]）" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild SatelliteRotation" />
+        <ui:Vector3Field label="衛星トルク（ヨー, ピッチ, ロール）" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild" />
         <ui:Button text="ダウンレンジ表示" parse-escape-sequences="true" display-tooltip-when-elided="true" style="border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-right-radius: 6px; border-bottom-left-radius: 6px; -unity-font: url(&quot;project://database/Assets/Noto_Sans_JP/static/NotoSansJP-Light.ttf?fileID=12800000&amp;guid=0ae1fd9ea5642404995941a936b2dabf&amp;type=3#NotoSansJP-Light&quot;); -unity-font-definition: initial;" />
         <ui:Vector3Field label="Vec3 Field" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild" style="display: none;" />
         <ui:Vector3Field label="Vec3 Field" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild" style="display: none;" />
         <ui:Vector3Field label="Vec3 Field" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild" style="display: none;" />
-        <ui:FloatField label="衛星高さ（km）" value="400" is-delayed="false" readonly="false" style="-unity-font: url(&quot;project://database/Assets/UI%20Toolkit/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&amp;guid=c272ed91a246e60428a2ff3aff0e24a2&amp;type=3#NotInter-Regular&quot;); -unity-font-definition: initial;" />
+        <ui:FloatField label="衛星高さ（km）" value="400" is-delayed="false" readonly="false" style="-unity-font: url(&quot;project://database/Assets/UI%20Toolkit/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&amp;guid=c272ed91a246e60428a2ff3aff0e24a2&amp;type=3#NotInter-Regular&quot;); -unity-font-definition: initial; display: none;" />
+        <ui:Vector2Field label="緯度経度（°）" style="max-height: none; align-self: auto; display: none;" />
+        <ui:Button text="撮影（S）" parse-escape-sequences="true" display-tooltip-when-elided="true" style="border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-right-radius: 6px; border-bottom-left-radius: 6px; -unity-font: url(&quot;project://database/Assets/Noto_Sans_JP/static/NotoSansJP-Medium.ttf?fileID=12800000&amp;guid=5892f067ee3530541a606cf074eb4e03&amp;type=3#NotoSansJP-Medium&quot;); -unity-font-definition: initial; height: 176px;" />
     </ui:ScrollView>
 </ui:UXML>

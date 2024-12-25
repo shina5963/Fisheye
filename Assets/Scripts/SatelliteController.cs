@@ -49,7 +49,8 @@ public class SatelliteController : MonoBehaviour
         // ‹O“¹–Ê‚ÌŒXÎİ’è
         SatelliteParent.transform.localRotation = Quaternion.Euler(0f, 0f, inclinationAngle);
 
-       
+        SatelliteParent.transform.localRotation = Quaternion.Euler(inclinationAngle,-90f ,0f );
+
 
         // ‰Šúƒ‰ƒ“ƒ_ƒ€‰ñ“]‘¬“xİ’è
         //UpdateRandomSpeeds();

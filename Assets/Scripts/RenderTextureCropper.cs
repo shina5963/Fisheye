@@ -59,9 +59,9 @@ public class RenderTextureCropper : MonoBehaviour
     // デバッグ用：キーを押したら保存
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            SaveRenderTextureAsCroppedPNG();
-        }
+      //  if (Input.GetKeyDown(KeyCode.S))
+      //  {
+       //     SaveRenderTextureAsCroppedPNG();
+       // }
     }
 }

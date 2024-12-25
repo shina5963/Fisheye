@@ -23,22 +23,39 @@ public class UISync : MonoBehaviour
 
     private Vector3Field SatelliteRotation;
     private Vector3Field SatellitePower;
+    private Vector3Field SatellitePos;
 
     private LensDistortion lensDistortion;
 
     private Button executeProjectionButton;
-  
+    private Button SaveButton;
+
+    private Toggle timeControlToggle;
+
     private void OnEnable()
     {
         // UIDocumentのルート要素を取得
         var root = UIRight.GetComponent<UIDocument>().rootVisualElement;
         var rootL = UILeft.GetComponent<UIDocument>().rootVisualElement;
 
+
+        // トグルを取得（例: トグルのラベルが "Time Control" の場合）
+        timeControlToggle = root.Query<Toggle>().Where(v => v.label == "時間停止（Space）").First();
+
         DayTime = root.Query<FloatField>().Where(v => v.label == "1 日の長さ（秒）").First();
         Height= root.Query<FloatField>().Where(v => v.label == "衛星高さ（km）").First();
 
-        SatelliteRotation = root.Query<Vector3Field>().Where(v => v.label == "Satellite Rotation").First();
-        SatellitePower = root.Query<Vector3Field>().Where(v => v.label == "Satellite Power").First();
+        SatelliteRotation = root.Query<Vector3Field>().Where(v => v.label == "衛星回転（ヨー[°], ピッチ[°], ロール[°]）").First();
+        SatellitePower = root.Query<Vector3Field>().Where(v => v.label == "衛星トルク（ヨー, ピッチ, ロール）").First();
+        SatellitePos = root.Query<Vector3Field>().Where(v => v.label == "衛星位置（緯度[°], 経度[°], 高度[km]）").First();
+      
+        // print(SatellitePos.inputUssClassName);
+        /* SatellitePos.xLabel = "緯度 (°)";
+         SatellitePos.yLabel = "経度 (°)";
+         SatellitePos.zLabel = "高度 (m)";*/
+
+
+
         FOV = root.Query<Slider>().Where(v => v.label == "視野角（度）").First();
         FisheyeRatio = root.Query<Slider>().Where(v => v.label == "魚眼率").First();
         // TextFieldを取得
@@ -51,10 +68,31 @@ public class UISync : MonoBehaviour
         }
 
         SatellitePower.value = RoundVector3(satelliteController.satellitePower, 2);
+        SatellitePos.value = RoundVector3(new Vector3(0,0, -Mathf.Round(SatelliteHeight.transform.localPosition.x + 6371)), 2);
 
         DayTime.value = Mathf.Round(earthController.rotationPeriod);
         Height.value = -Mathf.Round(SatelliteHeight.transform.localPosition.x+6371);
         FOV.value = Mathf.Round(FisheyeCamera.fieldOfView);
+
+
+        // トグルの値変更イベントを登録
+        timeControlToggle.RegisterValueChangedCallback(evt =>
+        {
+            if (evt.newValue)
+            {
+                Time.timeScale = 0;
+            }
+            else
+            {
+                // トグルがオフになった場合
+                // トグルがオンになった場合
+                Time.timeScale = 1;
+              
+            }
+
+            // トグルのテキストを更新
+            UpdateToggleText(evt.newValue);
+        });
 
         // Lens Distortionエフェクトを取得
         //var  = FindObjectOfType<Volume>();
@@ -89,6 +127,20 @@ public class UISync : MonoBehaviour
 
             // 丸めた値をフィールドに再代入（フィールドを更新）
             SatellitePower.SetValueWithoutNotify(roundedValue);
+        });
+
+        SatellitePos.RegisterValueChangedCallback(evt =>
+        {
+            // 値を丸めてTransformに反映
+            var roundedValue = RoundVector3(evt.newValue, 2);
+            if (roundedValue.z < 1)
+                roundedValue.z = 1;
+            SatelliteHeight.transform.localPosition = -new Vector3(roundedValue.z + 6371, 0, 0);
+
+            //satelliteController.satellitePower = roundedValue.z;
+
+            // 丸めた値をフィールドに再代入（フィールドを更新）
+            SatellitePos.SetValueWithoutNotify(roundedValue);
         });
 
         DayTime.RegisterValueChangedCallback(evt =>
@@ -141,6 +193,7 @@ public class UISync : MonoBehaviour
 
         // ボタンを取得
         executeProjectionButton = root.Query<Button>().Where(v => v.text == "ダウンレンジ表示").First();
+        SaveButton = root.Query<Button>().Where(v => v.text == "撮影（S）").First();
 
         // ボタンのクリックイベントを登録
         executeProjectionButton.RegisterCallback<ClickEvent>(evt =>
@@ -150,10 +203,53 @@ public class UISync : MonoBehaviour
            // Debug.Log("Projection executed.");
         });
 
-    }
+        // ボタンのクリックイベントを登録
+        SaveButton.RegisterCallback<ClickEvent>(evt =>
+        {
+            // FrustumToEarthProjection.Projection() を実行
+            webGLRenderTextureSaver.SaveRenderTextureAsCroppedPNG();
+            // Debug.Log("Projection executed.");
+        });
 
+    }
+    public WebGLRenderTextureSaver webGLRenderTextureSaver;
+        
+
+    // トグルのテキストを更新するヘルパーメソッド
+    private void UpdateToggleText(bool isOn)
+    {
+        if (isOn)
+        {
+            timeControlToggle.text = "停止中";
+        }
+        else
+        {
+            timeControlToggle.text = "";
+        }
+    }
     private void Update()
     {
+
+        // Spaceキーでトグルのオンオフを切り替える
+        if (Input.GetKeyDown(KeyCode.Space) && timeControlToggle != null)
+        {
+            // 現在のトグルの値を反転
+            bool newValue = !timeControlToggle.value;
+            timeControlToggle.value = newValue;
+
+            // トグルのテキストを更新
+            UpdateToggleText(newValue);
+
+            // 時間制御の処理を実行
+            if (newValue)
+            {
+                Time.timeScale = 0; // 停止
+            }
+            else
+            {
+                Time.timeScale = 1; // 再開
+            }
+        }
         // オブジェクトのTransformが変更された場合、Vector3Fieldを更新
         if (targetObject != null)
         {

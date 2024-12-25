@@ -161,3 +161,79 @@ Slider #unity-drag-container #unity-dragger {
 Slider #unity-text-field {
     width: 75px;
 }
+
+Vector2Field FloatField {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    flex-basis: auto;
+    align-items: auto;
+    justify-content: flex-start;
+    flex-shrink: initial;
+    max-width: 243%;
+    min-width: 0;
+    align-self: auto;
+    margin-right: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: auto;
+    padding-top: initial;
+    padding-right: initial;
+    padding-bottom: initial;
+    padding-left: initial;
+    border-top-width: initial;
+    border-right-width: initial;
+    -unity-background-scale-mode: stretch-to-fill;
+    text-overflow: clip;
+}
+
+Vector2Field VisualElement {
+    align-items: auto;
+    flex-direction: row-reverse;
+    flex-wrap: wrap-reverse;
+}
+
+Vector2Field > Label {
+    flex-direction: row-reverse;
+    align-items: auto;
+    justify-content: flex-end;
+    align-self: flex-start;
+}
+
+Vector2Field {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.SatellitePosVector3Field #Vector3Field VisualElement Label {
+    display: flex;
+    visibility: hidden;
+}
+
+.SatellitePosVector3Field #VisualElement Label {
+    min-width: 121px;
+    -unity-text-align: lower-left;
+    white-space: normal;
+    left: 0;
+    align-items: flex-start;
+    align-self: flex-start;
+    justify-content: center;
+    flex-wrap: nowrap;
+}
+
+Button {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    max-height: 40px;
+}
+
+.TimeButtons Button {
+    min-width: 19px;
+    max-width: 40px;
+}
+
+Toggle {
+}
