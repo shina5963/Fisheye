@@ -12,10 +12,10 @@ public class AngleCalculator : MonoBehaviour
         {
             Vector3 lineA = fisheye.transform.forward; // fisheyeのローカルZ軸をワールド座標系に変換したベクトル
                                              // 結果をデバッグログに表示
-            Debug.Log("lineA : " + lineA);
+           // Debug.Log("lineA : " + lineA);
             // ラインB: 衛星中心と地球中心を結ぶベクトル
             Vector3 lineB = earth.transform.position - satellite.transform.position;
-            Debug.Log("lineB : " + lineB.normalized);
+           // Debug.Log("lineB : " + lineB.normalized);
 
             // ベクトルの角度を求める
              angle = Vector3.Angle(lineA, lineB.normalized);

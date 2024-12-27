@@ -34,6 +34,7 @@ public class WebGLRenderTextureSaver : MonoBehaviour
         string base64Image = System.Convert.ToBase64String(bytes);
 
         float angle = angleCalculator.angle; // 必要に応じて計算した角度を取得
+        print(angle);
         // JavaScriptを呼び出して画像をダウンロード
         Application.ExternalCall("DownloadImage", base64Image, angle);
 

@@ -121,30 +121,30 @@
 
 
         
-            function DownloadImage(base64Image, sight) {
-            var now = new Date();
-            var year = now.getFullYear();
-            var month = (now.getMonth() + 1).toString().padStart(2, '0');
-            var day = now.getDate().toString().padStart(2, '0');
-            var hours = now.getHours().toString().padStart(2, '0');
-            var minutes = now.getMinutes().toString().padStart(2, '0');
-            var seconds = now.getSeconds().toString().padStart(2, '0');
-            var milliseconds = now.getMilliseconds().toString().padStart(3, '0');
+        function DownloadImage(base64Image, sight) {
+        var now = new Date();
+        var year = now.getFullYear();
+        var month = (now.getMonth() + 1).toString().padStart(2, '0');
+        var day = now.getDate().toString().padStart(2, '0');
+        var hours = now.getHours().toString().padStart(2, '0');
+        var minutes = now.getMinutes().toString().padStart(2, '0');
+        var seconds = now.getSeconds().toString().padStart(2, '0');
+        var milliseconds = now.getMilliseconds().toString().padStart(3, '0');
 
-            // 現在の日時をフォーマット
-            var formattedDate = `${year}${month}${day}-${hours}${minutes}${seconds}${milliseconds}`;
+        // 現在の日時をフォーマット
+        var formattedDate = `${year}${month}${day}-${hours}${minutes}${seconds}${milliseconds}`;
 
-             // ファイル名に視線角 (sight) を追加    var fileName = `SatelliteImage_${formattedDate}_${sight.toFixed(2)}.png`;
+            // ファイル名に視線角 (sight) を追加    var fileName = `SatelliteImage_${formattedDate}_${sight.toFixed(2)}.png`;
             
-            var fileName = `SatelliteImage_${formattedDate}_${sight}.png`;
+        var fileName = `SatelliteImage_${formattedDate}_${sight}.png`;
          
 
-            var link = document.createElement('a');
-            link.href = 'data:image/png;base64,' + base64Image;
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+        var link = document.createElement('a');
+        link.href = 'data:image/png;base64,' + base64Image;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
         }
     </script>
 
