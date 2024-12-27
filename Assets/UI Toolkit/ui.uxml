@@ -7,10 +7,14 @@
             <ui:Button text="ll" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-style: bold;" />
             <ui:Button text="▶l" parse-escape-sequences="true" display-tooltip-when-elided="true" style="display: none;" />
         </ui:VisualElement>
-        <ui:Toggle label="時間停止（Space）" value="false" />
-        <ui:FloatField label="1 日の長さ（秒）" value="1440" style="-unity-font: url(&quot;project://database/Assets/UI%20Toolkit/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&amp;guid=c272ed91a246e60428a2ff3aff0e24a2&amp;type=3#NotInter-Regular&quot;); -unity-font-definition: initial;" />
-        <ui:Slider label="視野角（度）" high-value="180" show-input-field="true" inverted="false" style="min-width: 11px;" />
-        <ui:Slider label="魚眼率" high-value="1" show-input-field="true" inverted="false" style="min-width: 11px;" />
+        <ui:Toggle label="時間停止（Space）" value="false" style="display: none;" />
+        <ui:FloatField label="1 日の長さ（秒）" value="1440" name="FloatField" style="-unity-font: url(&quot;project://database/Assets/UI%20Toolkit/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&amp;guid=c272ed91a246e60428a2ff3aff0e24a2&amp;type=3#NotInter-Regular&quot;); -unity-font-definition: initial; display: none;" />
+        <ui:Button text="ダウンレンジ表示" parse-escape-sequences="true" display-tooltip-when-elided="true" style="border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-right-radius: 6px; border-bottom-left-radius: 6px; -unity-font: url(&quot;project://database/Assets/Noto_Sans_JP/static/NotoSansJP-Light.ttf?fileID=12800000&amp;guid=0ae1fd9ea5642404995941a936b2dabf&amp;type=3#NotoSansJP-Light&quot;); -unity-font-definition: initial; display: none;" />
+        <ui:Button text="撮影（S）" parse-escape-sequences="true" display-tooltip-when-elided="true" style="border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-right-radius: 6px; border-bottom-left-radius: 6px; -unity-font: url(&quot;project://database/Assets/Noto_Sans_JP/static/NotoSansJP-Medium.ttf?fileID=12800000&amp;guid=5892f067ee3530541a606cf074eb4e03&amp;type=3#NotoSansJP-Medium&quot;); -unity-font-definition: initial; height: 176px; display: none;" />
+        <ui:Label tabindex="-1" text="--------------------------------衛星--------------------------------" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" style="-unity-text-align: upper-center; left: auto; display: flex;" />
+        <ui:Slider label="視野角（度）" high-value="180" show-input-field="true" inverted="false" style="min-width: 11px; display: none;" />
+        <ui:Slider label="魚眼率" high-value="1" show-input-field="true" inverted="false" name="Slider" style="min-width: 11px; display: none;" />
+        <ui:Slider label="近点経度[°]" high-value="180" show-input-field="true" inverted="false" low-value="-180" style="min-width: 11px; -unity-font: url(&quot;project://database/Assets/Noto_Sans_JP/static/NotoSansJP-Medium.ttf?fileID=12800000&amp;guid=5892f067ee3530541a606cf074eb4e03&amp;type=3#NotoSansJP-Medium&quot;); display: flex; visibility: visible;" />
         <ui:VisualElement name="VisualElement" class="SatellitePosVector3Field" style="flex-grow: 1; max-height: 130px; display: none;">
             <ui:Vector3Field label="衛星位置" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild" style="display: flex;" />
             <ui:VisualElement name="VisualElement" style="flex-grow: 1; flex-direction: row; justify-content: center; align-items: center; position: relative; top: -85px; min-height: 78px; height: -135px;">
@@ -19,15 +23,13 @@
                 <ui:Label tabindex="-1" text="高さ（km）" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:Vector3Field label="衛星位置（緯度[°], 経度[°], 高度[km]）" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild SatelliteRotation" />
+        <ui:Vector3Field label="衛星位置（緯度[°], 経度[°], 高度[km]）" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild SatelliteRotation SatPos" />
         <ui:Vector3Field label="衛星回転（ヨー[°], ピッチ[°], ロール[°]）" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild SatelliteRotation" />
         <ui:Vector3Field label="衛星トルク（ヨー, ピッチ, ロール）" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild" />
-        <ui:Button text="ダウンレンジ表示" parse-escape-sequences="true" display-tooltip-when-elided="true" style="border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-right-radius: 6px; border-bottom-left-radius: 6px; -unity-font: url(&quot;project://database/Assets/Noto_Sans_JP/static/NotoSansJP-Light.ttf?fileID=12800000&amp;guid=0ae1fd9ea5642404995941a936b2dabf&amp;type=3#NotoSansJP-Light&quot;); -unity-font-definition: initial;" />
-        <ui:Vector3Field label="Vec3 Field" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild" style="display: none;" />
         <ui:Vector3Field label="Vec3 Field" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild" style="display: none;" />
         <ui:Vector3Field label="Vec3 Field" name="Vector3Field" focusable="true" x="0.02" class="Vector3FieldChild" style="display: none;" />
         <ui:FloatField label="衛星高さ（km）" value="400" is-delayed="false" readonly="false" style="-unity-font: url(&quot;project://database/Assets/UI%20Toolkit/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&amp;guid=c272ed91a246e60428a2ff3aff0e24a2&amp;type=3#NotInter-Regular&quot;); -unity-font-definition: initial; display: none;" />
         <ui:Vector2Field label="緯度経度（°）" style="max-height: none; align-self: auto; display: none;" />
-        <ui:Button text="撮影（S）" parse-escape-sequences="true" display-tooltip-when-elided="true" style="border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-right-radius: 6px; border-bottom-left-radius: 6px; -unity-font: url(&quot;project://database/Assets/Noto_Sans_JP/static/NotoSansJP-Medium.ttf?fileID=12800000&amp;guid=5892f067ee3530541a606cf074eb4e03&amp;type=3#NotoSansJP-Medium&quot;); -unity-font-definition: initial; height: 176px;" />
+        <ui:FloatField label="視線角[°]" value="42.2" class="Sight" style="margin-top: 8px;" />
     </ui:ScrollView>
 </ui:UXML>

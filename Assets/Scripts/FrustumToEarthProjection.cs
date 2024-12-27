@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic; // Listを使用するために必要
+using System.Collections; // コルーチンを使用するために必要
 public class FrustumToEarthProjection : MonoBehaviour
 {
     public Camera camera; // 対象となるカメラ
@@ -226,6 +227,15 @@ public class FrustumToEarthProjection : MonoBehaviour
         Debug.Log("Calculating spherical polygon area...");
        float area = CalculateSphericalPolygonArea(intersections, earthRadius);
         Debug.Log($"Projected Area: {area} km^2");
+
+        // Projection処理終了後に5秒後、ClearCreatedObjectsを実行
+        StartCoroutine(ClearObjectsAfterDelay(5f));
+    }
+    private IEnumerator ClearObjectsAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay); // 指定された時間だけ待つ
+        ClearCreatedObjects(); // オブジェクトを削除
+        Debug.Log("Objects cleared after delay.");
     }
     float CalculateArcLength(Vector3 pointA, Vector3 pointB, float radius)
     {

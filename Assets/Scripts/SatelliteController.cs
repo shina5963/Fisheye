@@ -47,9 +47,9 @@ public class SatelliteController : MonoBehaviour
     {
 
         // ‹O“¹–Ê‚ÌŒXÎİ’è
-        SatelliteParent.transform.localRotation = Quaternion.Euler(0f, 0f, inclinationAngle);
+       // SatelliteParent.transform.localRotation = Quaternion.Euler(0f, 0f, inclinationAngle);
 
-        SatelliteParent.transform.localRotation = Quaternion.Euler(inclinationAngle,-90f ,0f );
+        //SatelliteParent.transform.localRotation = Quaternion.Euler(inclinationAngle,-90f ,0f );
 
 
         // ‰Šúƒ‰ƒ“ƒ_ƒ€‰ñ“]‘¬“xİ’è
@@ -66,8 +66,15 @@ public class SatelliteController : MonoBehaviour
         degreesPerSecond = 360f / orbitPeriod;
 
         // ‹O“¹‰ñ“]ˆ—
-        SatelliteParent.transform.Rotate(0f, -1 * degreesPerSecond * Time.deltaTime, 0f, Space.Self);
+        //SatelliteParent.transform.Rotate(0f, -1 * degreesPerSecond * Time.deltaTime, 0f, Space.Self);
+        //SatelliteParent.transform.Rotate(0f, 0, -1 * degreesPerSecond * Time.deltaTime, Space.Self);
+        Vector3 localEulerAngles = SatelliteParent.transform.localRotation.eulerAngles;
 
+        // Œ»İ‚Ìƒ[ƒJƒ‹‰ñ“]Šp‚ğæ“¾‚µAz²‚ğŒ¸­‚³‚¹‚é
+        localEulerAngles.z += degreesPerSecond * Time.deltaTime;
+
+        // V‚µ‚¢‰ñ“]‚ğ“K—p‚·‚é
+        SatelliteParent.transform.localRotation = Quaternion.Euler(localEulerAngles);
         // ƒ‰ƒ“ƒ_ƒ€p¨‰ñ“]
         //Satellite.transform.Rotate(rollSpeed * Time.deltaTime, pitchSpeed * Time.deltaTime, yawSpeed * Time.deltaTime, Space.Self);
         Satellite.transform.Rotate(satellitePower.x* Time.deltaTime, satellitePower.y* Time.deltaTime, satellitePower.z* Time.deltaTime, Space.Self);

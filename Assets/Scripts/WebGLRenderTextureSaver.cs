@@ -3,8 +3,10 @@ using UnityEngine;
 public class WebGLRenderTextureSaver : MonoBehaviour
 {
     public RenderTexture renderTexture; // 2592x2592のRenderTexture
+    public AngleCalculator angleCalculator;
 
-   public  void SaveRenderTextureAsCroppedPNG()
+
+    public void SaveRenderTextureAsCroppedPNG()
     {
         if (renderTexture == null)
         {
@@ -31,8 +33,9 @@ public class WebGLRenderTextureSaver : MonoBehaviour
         byte[] bytes = croppedTexture.EncodeToPNG();
         string base64Image = System.Convert.ToBase64String(bytes);
 
+        float angle = angleCalculator.angle; // 必要に応じて計算した角度を取得
         // JavaScriptを呼び出して画像をダウンロード
-        Application.ExternalCall("DownloadImage", base64Image);
+        Application.ExternalCall("DownloadImage", base64Image, angle);
 
         Debug.Log("Cropped image processed for download.");
 

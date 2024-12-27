@@ -85,6 +85,9 @@ FloatInput {
     flex-direction: row;
     justify-content: flex-start;
     width: 153px;
+    flex-grow: initial;
+    align-self: auto;
+    flex-wrap: nowrap;
 }
 
 #Vector3Field FloatField Label {
@@ -236,4 +239,24 @@ Button {
 }
 
 Toggle {
+}
+
+.SatPos #unity-y-input #unity-text-input {
+    background-color: rgb(94, 94, 94);
+    max-width: 153px;
+    width: 157px;
+}
+
+.SatPos #unity-x-input #unity-text-input {
+    background-color: rgb(94, 94, 94);
+    max-width: 153px;
+    width: 157px;
+}
+
+.LineOfSight {
+}
+
+.Sight #unity-text-input {
+    background-color: rgb(94, 94, 94);
+    margin-right: 22px;
 }

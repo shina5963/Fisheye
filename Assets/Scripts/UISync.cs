@@ -10,16 +10,21 @@ public class UISync : MonoBehaviour
     public SatelliteController satelliteController;
     public EarthController earthController;
     public FrustumToEarthProjection frustumToEarthProjection;
-    public GameObject targetObject; // 回転を同期する対象のオブジェクト
+    public  SatellitePositionTracker satellitePositionTracker;
+    public AngleCalculator angleCalculator;
+     
+        public GameObject targetObject; // 回転を同期する対象のオブジェクト
     public GameObject SatelliteHeight;
+    public GameObject SatelliteParent;
     private TextField timeStringField;
 
     public Camera FisheyeCamera;
     public Volume volume;
     private FloatField DayTime;
-    private FloatField Height;
+    private FloatField Sight;
     private Slider FOV;
     private Slider FisheyeRatio;
+    private Slider Declination;
 
     private Vector3Field SatelliteRotation;
     private Vector3Field SatellitePower;
@@ -40,10 +45,10 @@ public class UISync : MonoBehaviour
 
 
         // トグルを取得（例: トグルのラベルが "Time Control" の場合）
-        timeControlToggle = root.Query<Toggle>().Where(v => v.label == "時間停止（Space）").First();
+        timeControlToggle = rootL.Query<Toggle>().Where(v => v.label == "時間停止（Space）").First();
 
-        DayTime = root.Query<FloatField>().Where(v => v.label == "1 日の長さ（秒）").First();
-        Height= root.Query<FloatField>().Where(v => v.label == "衛星高さ（km）").First();
+        DayTime = rootL.Query<FloatField>().Where(v => v.label == "1 日の長さ[秒]").First();
+        Sight= root.Query<FloatField>().Where(v => v.label == "視線角[°]").First();
 
         SatelliteRotation = root.Query<Vector3Field>().Where(v => v.label == "衛星回転（ヨー[°], ピッチ[°], ロール[°]）").First();
         SatellitePower = root.Query<Vector3Field>().Where(v => v.label == "衛星トルク（ヨー, ピッチ, ロール）").First();
@@ -56,8 +61,9 @@ public class UISync : MonoBehaviour
 
 
 
-        FOV = root.Query<Slider>().Where(v => v.label == "視野角（度）").First();
-        FisheyeRatio = root.Query<Slider>().Where(v => v.label == "魚眼率").First();
+        FOV = rootL.Query<Slider>().Where(v => v.label == "視野角[°]").First();
+        FisheyeRatio = rootL.Query<Slider>().Where(v => v.label == "魚眼率").First();
+        Declination= root.Query<Slider>().Where(v => v.label == "近点経度[°]").First();
         // TextFieldを取得
         timeStringField = rootL.Query<TextField>().Where(v => v.label == "時刻").First();
 
@@ -68,10 +74,12 @@ public class UISync : MonoBehaviour
         }
 
         SatellitePower.value = RoundVector3(satelliteController.satellitePower, 2);
-        SatellitePos.value = RoundVector3(new Vector3(0,0, -Mathf.Round(SatelliteHeight.transform.localPosition.x + 6371)), 2);
+
+        Vector2 LatLon = satellitePositionTracker.latLon;
+    SatellitePos.value = RoundVector3(new Vector3(LatLon.x, LatLon.y, -Mathf.Round(SatelliteHeight.transform.localPosition.x + 6371)), 2);
 
         DayTime.value = Mathf.Round(earthController.rotationPeriod);
-        Height.value = -Mathf.Round(SatelliteHeight.transform.localPosition.x+6371);
+        Sight.value = angleCalculator.angle;//Mathf.Round(angleCalculator.angle);
         FOV.value = Mathf.Round(FisheyeCamera.fieldOfView);
 
 
@@ -104,6 +112,9 @@ public class UISync : MonoBehaviour
         {
             Debug.LogError("Lens Distortion is not set in the Volume profile.");
         }
+
+     
+        Declination.value = Round(SatelliteParent.transform.localRotation.eulerAngles.z, 2); // 初期値を設定
 
         // Vector3Fieldの値変更イベントを登録
         SatelliteRotation.RegisterValueChangedCallback(evt =>
@@ -155,17 +166,7 @@ public class UISync : MonoBehaviour
             DayTime.SetValueWithoutNotify(roundedValue);
         });
 
-        Height.RegisterValueChangedCallback(evt =>
-        {
-            // 値を丸めてTransformに反映
-            var roundedValue = Mathf.Round(evt.newValue);
-            if (roundedValue < 1)
-                roundedValue = 1;
-            SatelliteHeight.transform.localPosition = -new Vector3( roundedValue+6371,0,0);
-
-            // 丸めた値をフィールドに再代入（フィールドを更新）
-            Height.SetValueWithoutNotify(roundedValue);
-        });
+      
 
         FOV.RegisterValueChangedCallback(evt =>
         {
@@ -191,9 +192,30 @@ public class UISync : MonoBehaviour
             }
         });
 
+        Declination.RegisterValueChangedCallback(evt =>
+        {
+            if (SatelliteParent != null)
+            {
+                // 値を丸めて反映
+                var roundedValue = Round(evt.newValue, 2);
+
+                // 現在のローカル回転角を取得
+                Vector3 localEulerAngles = SatelliteParent.transform.localRotation.eulerAngles;
+
+                // 入力された値を-180°~180°に正規化
+                localEulerAngles.z = NormalizeAngle(roundedValue);
+
+                // 新しい回転を適用
+                SatelliteParent.transform.localRotation = Quaternion.Euler(localEulerAngles);
+
+                // 丸めた値をフィールドに再代入（通知を送らないで更新）
+                Declination.SetValueWithoutNotify(roundedValue);
+            }
+        });
+
         // ボタンを取得
-        executeProjectionButton = root.Query<Button>().Where(v => v.text == "ダウンレンジ表示").First();
-        SaveButton = root.Query<Button>().Where(v => v.text == "撮影（S）").First();
+        executeProjectionButton = rootL.Query<Button>().Where(v => v.text == "ダウンレンジ表示").First();
+        SaveButton = rootL.Query<Button>().Where(v => v.text == "撮影（S）").First();
 
         // ボタンのクリックイベントを登録
         executeProjectionButton.RegisterCallback<ClickEvent>(evt =>
@@ -259,13 +281,46 @@ public class UISync : MonoBehaviour
                 SatelliteRotation.value = roundedValue;
             }
         }
+        // オブジェクトのTransformが変更された場合、Vector3Fieldを更新
+        if (SatelliteParent != null)
+        {
+            // 現在のローカル回転角を取得し、-180°~180°に変換
+            float rawAngle = SatelliteParent.transform.localRotation.eulerAngles.z;
+            float normalizedAngle = NormalizeAngle(rawAngle);
+
+            // 小数点以下2桁に丸める
+            var roundedValue = Round(normalizedAngle, 2);
+
+            if (Declination.value != roundedValue)
+            {
+                Declination.value = roundedValue;
+            }
+        }
+        if(angleCalculator!=null)
+            Sight.value = angleCalculator.angle;
+
+        if (satellitePositionTracker != null) {
+            Vector2 LatLon = satellitePositionTracker.latLon;
+            SatellitePos.value = RoundVector3(new Vector3(LatLon.x, LatLon.y, -Mathf.Round(SatelliteHeight.transform.localPosition.x + 6371)), 2);
+        }
+
         if (earthController != null && timeStringField != null)
         {
             // EarthControllerのtimeStringをTextFieldに反映
             timeStringField.SetValueWithoutNotify(earthController.timeString);
         }
     }
+    // 角度を-180°~180°に正規化するメソッド
+    float NormalizeAngle(float angle)
+    {
+        // 360°ごとにループ
+        angle = angle % 360;
+        // -180°~180°の範囲に変換
+        if (angle > 180) angle -= 360;
+        return angle;
+    }
 
+   
     // Vector3 の各成分を指定した小数点以下の桁数で丸める
     private Vector3 RoundVector3(Vector3 value, int decimalPlaces)
     {

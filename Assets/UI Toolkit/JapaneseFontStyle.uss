@@ -1,6 +1,6 @@
 Label {
     -unity-font-definition: initial;
-    -unity-font: url("project://database/Assets/Noto_Sans_JP/static/NotoSansJP-Medium.ttf?fileID=12800000&guid=5892f067ee3530541a606cf074eb4e03&type=3#NotoSansJP-Medium");
+    -unity-font: url("project://database/Assets/Noto_Sans_JP/static/NotoSansJP-Regular.ttf?fileID=12800000&guid=ac0daf96bbb1cc947b4c2bd29b911ac3&type=3#NotoSansJP-Regular");
     -unity-font-style: normal;
     font-size: 20px;
     left: 10px;

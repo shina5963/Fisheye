@@ -18,7 +18,7 @@ TextField Label {
 TextField {
     display: flex;
     position: relative;
-    max-height: none;
+    max-height: 48px;
     min-width: auto;
     align-items: auto;
     flex-direction: row;
