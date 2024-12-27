@@ -1,4 +1,4 @@
-TextField #unity-text-input {
+.TextField #unity-text-input {
     background-color: rgb(109, 109, 109);
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
@@ -6,7 +6,7 @@ TextField #unity-text-input {
     border-bottom-left-radius: 6px;
 }
 
-TextField Label {
+.TextField Label {
     justify-content: space-around;
     align-self: stretch;
     align-items: auto;
@@ -15,7 +15,7 @@ TextField Label {
     left: 10px;
 }
 
-TextField {
+.TextField {
     display: flex;
     position: relative;
     max-height: 48px;
