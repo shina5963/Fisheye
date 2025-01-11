@@ -19,7 +19,7 @@ public class WebGLRenderTextureSaver : MonoBehaviour
         RenderTexture.active = renderTexture;
 
         // RenderTextureの内容をTexture2Dにコピー
-        Texture2D texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGB24, false);
+        Texture2D texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGBA32, false);
         texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
         texture.Apply();
 
