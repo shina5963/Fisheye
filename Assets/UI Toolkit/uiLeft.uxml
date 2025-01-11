@@ -15,5 +15,10 @@
         <ui:Slider label="魚眼率" high-value="1" show-input-field="true" inverted="false" style="min-width: 11px;" />
         <ui:Button text="ダウンレンジ表示" parse-escape-sequences="true" display-tooltip-when-elided="true" style="border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-right-radius: 6px; border-bottom-left-radius: 6px; -unity-font: url(&quot;project://database/Assets/Noto_Sans_JP/static/NotoSansJP-Medium.ttf?fileID=12800000&amp;guid=5892f067ee3530541a606cf074eb4e03&amp;type=3#NotoSansJP-Medium&quot;); -unity-font-definition: initial;" />
         <ui:Button text="撮影（S）" parse-escape-sequences="true" display-tooltip-when-elided="true" style="border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-right-radius: 6px; border-bottom-left-radius: 6px; -unity-font: url(&quot;project://database/Assets/Noto_Sans_JP/static/NotoSansJP-Medium.ttf?fileID=12800000&amp;guid=5892f067ee3530541a606cf074eb4e03&amp;type=3#NotoSansJP-Medium&quot;); -unity-font-definition: initial; height: 176px;" />
+        <ui:Label tabindex="-1" text="--------------------------------グリッド--------------------------------" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" style="-unity-text-align: upper-center; left: auto;" />
+        <ui:Toggle label="グリッド表示" value="true" />
+        <ui:Slider label="サイズ" high-value="2" show-input-field="true" inverted="false" style="min-width: 11px;" />
+        <ui:Slider label="太さ" high-value="20" show-input-field="true" inverted="false" style="min-width: 11px;" />
+        <ui:Toggle label="色変更UI表示" value="false" />
     </ui:ScrollView>
 </ui:UXML>

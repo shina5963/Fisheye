@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-
+using HSVPicker;
 public class UISync : MonoBehaviour
 {
     public UIDocument UIRight;
@@ -12,10 +12,13 @@ public class UISync : MonoBehaviour
     public FrustumToEarthProjection frustumToEarthProjection;
     public  SatellitePositionTracker satellitePositionTracker;
     public AngleCalculator angleCalculator;
-     
-        public GameObject targetObject; // 回転を同期する対象のオブジェクト
+    public GridDisplay gridDisplay;
+
+    public GameObject targetObject; // 回転を同期する対象のオブジェクト
     public GameObject SatelliteHeight;
     public GameObject SatelliteParent;
+    public GameObject GridColorUI;
+    GameObject Grid;
     private TextField timeStringField;
 
     public Camera FisheyeCamera;
@@ -25,6 +28,8 @@ public class UISync : MonoBehaviour
     private Slider FOV;
     private Slider FisheyeRatio;
     private Slider Declination;
+    private Slider GridSize;
+    private Slider GridWidth;
 
     private Vector3Field SatelliteRotation;
     private Vector3Field SatellitePower;
@@ -36,6 +41,10 @@ public class UISync : MonoBehaviour
     private Button SaveButton;
 
     private Toggle timeControlToggle;
+    private Toggle GridDisplayToggle;
+    private Toggle GridColorDisplayToggle;
+
+    public ColorPicker picker;
 
     private void OnEnable()
     {
@@ -46,6 +55,8 @@ public class UISync : MonoBehaviour
 
         // トグルを取得（例: トグルのラベルが "Time Control" の場合）
         timeControlToggle = rootL.Query<Toggle>().Where(v => v.label == "時間停止（Space）").First();
+        GridDisplayToggle = rootL.Query<Toggle>().Where(v => v.label == "グリッド表示").First();
+        GridColorDisplayToggle = rootL.Query<Toggle>().Where(v => v.label == "色変更UI表示").First();
 
         DayTime = rootL.Query<FloatField>().Where(v => v.label == "1 日の長さ[秒]").First();
         Sight= root.Query<FloatField>().Where(v => v.label == "視線角[°]").First();
@@ -63,7 +74,9 @@ public class UISync : MonoBehaviour
 
         FOV = rootL.Query<Slider>().Where(v => v.label == "視野角[°]").First();
         FisheyeRatio = rootL.Query<Slider>().Where(v => v.label == "魚眼率").First();
-        Declination= root.Query<Slider>().Where(v => v.label == "近点経度[°]").First();
+       GridSize = rootL.Query<Slider>().Where(v => v.label == "サイズ").First();
+       GridWidth = rootL.Query<Slider>().Where(v => v.label == "太さ").First();
+        Declination = root.Query<Slider>().Where(v => v.label == "近点経度[°]").First();
         // TextFieldを取得
         timeStringField = rootL.Query<TextField>().Where(v => v.label == "時刻").First();
 
@@ -101,6 +114,36 @@ public class UISync : MonoBehaviour
             // トグルのテキストを更新
             UpdateToggleText(evt.newValue);
         });
+        Grid = gridDisplay.gridPrefab;
+        GridDisplayToggle.RegisterValueChangedCallback(evt =>
+        {
+            if (evt.newValue)
+            {
+                gridDisplay.gridPrefab.SetActive(true);
+            }
+            else
+            {
+                gridDisplay.gridPrefab.SetActive(false);
+
+            }
+
+           
+        });
+        GridColorDisplayToggle.RegisterValueChangedCallback(evt =>
+        {
+            if (evt.newValue)
+            {
+                GridColorUI.SetActive(true);
+            }
+            else
+            {
+                GridColorUI.SetActive(false);
+
+            }
+
+
+        });
+
 
         // Lens Distortionエフェクトを取得
         //var  = FindObjectOfType<Volume>();
@@ -113,7 +156,10 @@ public class UISync : MonoBehaviour
             Debug.LogError("Lens Distortion is not set in the Volume profile.");
         }
 
-     
+
+        GridSize.value = 1; // 初期値を設定
+        GridWidth.value = gridDisplay.lineWidth; // 初期値を設定
+
         Declination.value = Round(SatelliteParent.transform.localRotation.eulerAngles.z, 2); // 初期値を設定
 
         // Vector3Fieldの値変更イベントを登録
@@ -192,6 +238,30 @@ public class UISync : MonoBehaviour
             }
         });
 
+        GridSize.RegisterValueChangedCallback(evt =>
+        {
+           
+                // 値を丸めて反映
+                var roundedValue = Round(evt.newValue, 2);
+                //lensDistortion.intensity.value = roundedValue;
+                gridDisplay.gridPrefab.transform.localScale = gridDisplay.initScale * roundedValue;
+                // 丸めた値をフィールドに再代入（フィールドを更新）
+                GridSize.SetValueWithoutNotify(roundedValue);
+           
+        });
+
+        GridWidth.RegisterValueChangedCallback(evt =>
+        {
+
+            // 値を丸めて反映
+            var roundedValue = Round(evt.newValue, 2);
+            //lensDistortion.intensity.value = roundedValue;
+            gridDisplay.SetLineWidth(roundedValue) ;
+            // 丸めた値をフィールドに再代入（フィールドを更新）
+            GridWidth.SetValueWithoutNotify(roundedValue);
+
+        });
+
         Declination.RegisterValueChangedCallback(evt =>
         {
             if (SatelliteParent != null)
@@ -231,6 +301,12 @@ public class UISync : MonoBehaviour
             // FrustumToEarthProjection.Projection() を実行
             webGLRenderTextureSaver.SaveRenderTextureAsCroppedPNG();
             // Debug.Log("Projection executed.");
+        });
+
+        picker.onValueChanged.AddListener(color =>
+        {
+            gridDisplay.SetGridColor(color);
+            //Debug.Log(color);
         });
 
     }
